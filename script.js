@@ -53,6 +53,30 @@ function editTask(index) {
     saveTasks();
     renderTasks();
   }
+
+  if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+function checkReminders() {
+  const now = new Date();
+
+  tasks.forEach(task => {
+    if (!task.done && task.dueDate) {
+      const due = new Date(task.dueDate);
+
+      if (due <= now && !task.notified) {
+        new Notification("タスク期限です！", {
+          body: task.title
+        });
+        task.notified = true;
+        saveTasks();
+      }
+    }
+  });
+}
+
+setInterval(checkReminders, 60000);
 }
 
 renderTasks();
